@@ -463,3 +463,24 @@ directives.register_directive('column', PageColumn)
 directives.register_directive('button', Button)
 directives.register_directive('footer', Footer)
 directives.register_directive('header', Header)
+
+
+
+class htmlDiv(Directive):
+    required_arguments, optional_arguments = 0,1
+    final_argument_whitespace = True
+    has_content = True
+    option_spec = {'class':  directives.class_option }
+    def run(self):
+        self.assert_has_content()
+        node = nodes.container(self.content)
+        node['classes'] = []
+        if self.arguments:
+            node['classes'] += [self.arguments[0]]
+        node['classes'] += self.options.get('class', [])
+
+        self.add_name(node)
+        self.state.nested_parse(self.content, self.content_offset, node)
+        return [node]
+
+directives.register_directive('div', htmlDiv)
